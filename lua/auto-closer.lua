@@ -2,7 +2,7 @@ local auto_closer = {}
 
 local prevCol
 
-local function get_prev_col()
+local function init_prevCol()
   prevCol=vim.api.nvim_win_get_cursor(0)[2]
 end
 
@@ -35,7 +35,7 @@ local function text_changed()
   textChangedI=true
 end
 
-local function check_brackets()
+local function close_it()
   if not textChangedI then
     return
   end
@@ -62,7 +62,7 @@ end
 function auto_closer.setup()
   vim.api.nvim_create_autocmd("InsertEnter", {
     pattern = "*",
-    callback = get_prev_col
+    callback = init_prevCol
   })
   vim.api.nvim_create_autocmd("TextChangedI", {
     pattern = "*",
@@ -70,7 +70,7 @@ function auto_closer.setup()
   })
   vim.api.nvim_create_autocmd("CursorMovedI", {
     pattern = "*",
-    callback = check_brackets
+    callback = close_it
   })
 end
 
