@@ -38,10 +38,10 @@ local function check_brackets()
   local col = vim.api.nvim_win_get_cursor(0)[2]
   local char = line:sub(col, col)
   if brackets[char] then
-    vim.api.nvim_feedkeys(brackets[char], 'n', true)
+    vim.api.nvim_input(brackets[char].."<Left>")
   elseif quotes[char] then
     if quotes[char][1] then
-        vim.api.nvim_feedkeys(char, 'n', true)
+        vim.api.nvim_input(char.."<Left>")
     end
     quotes[char][1]=not quotes[char][1]
   end
