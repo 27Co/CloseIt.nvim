@@ -6,7 +6,7 @@ local function get_prev_col()
   prevCol=vim.api.nvim_win_get_cursor(0)[2]
 end
 
-local function check_insertion()
+local function check_forward()
   local currCol=vim.api.nvim_win_get_cursor(0)[2]
   if prevCol<currCol then
     prevCol=currCol
@@ -29,8 +29,19 @@ local quotes={
   ["`"]={true}
 }
 
+local textChangedI=false
+
+local function text_changed()
+  textChangedI=true
+end
+
 local function check_brackets()
-  if not check_insertion() then
+  if not textChangedI then
+    return
+  end
+  textChangedI=false
+
+  if not check_forward() then
     return
   end
 
@@ -54,6 +65,10 @@ function auto_closer.setup()
     callback = get_prev_col
   })
   vim.api.nvim_create_autocmd("TextChangedI", {
+    pattern = "*",
+    callback = text_changed
+  })
+  vim.api.nvim_create_autocmd("CursorMovedI", {
     pattern = "*",
     callback = check_brackets
   })
