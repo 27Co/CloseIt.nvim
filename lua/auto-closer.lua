@@ -54,7 +54,7 @@ local function close_it()
   -- from here, a single character is either added or removed
   if singleAdd then
     if brackets[currChar] then
-      vim.api.nvim_input(brackets[currChar].."<Left>")
+      vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {brackets[currChar]})
     --[[
     elseif quotes[currChar] then
       if quotes[currChar][1] then
@@ -65,7 +65,7 @@ local function close_it()
     end
   elseif singleRmv then
     if posChar==brackets[prevChar] then
-      vim.api.nvim_input("<Del>")
+      vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
     --[[
     elseif quotes[prevChar] then
       if quotes[prevChar][1] then
