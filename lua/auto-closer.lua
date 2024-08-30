@@ -19,29 +19,22 @@ local function update_pos()
     end
 end
 
-local brackets={
+local them={
   ["("]=")",
   ["["]="]",
-  ["{"]="}"
+  ["{"]="}",
+  ["'"]="'",
+  ['"']='"',
+  ["`"]="`"
 }
-
---[[
-local quotes={
-  ["'"]={true},
-  ['"']={true},
-  ["`"]={true}
-}
---]]
 
 local function close_it()
   -- check single character change
   local singleAdd, singleRmv=false, false
   if currRow==prevRow then
     if currCol==prevCol+1 then
-      -- insert a char
       singleAdd=true
     elseif currCol==prevCol-1 then
-      -- delete a char
       singleRmv=true
     end
   end
@@ -53,26 +46,12 @@ local function close_it()
 
   -- from here, a single character is either added or removed
   if singleAdd then
-    if brackets[currChar] then
-      vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {brackets[currChar]})
-    --[[
-    elseif quotes[currChar] then
-      if quotes[currChar][1] then
-        vim.api.nvim_input(currChar.."<Left>")
-      end
-      quotes[currChar][1]=not quotes[currChar][1]
-    --]]
+    if them[currChar] then
+      vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {them[currChar]})
     end
   elseif singleRmv then
-    if posChar==brackets[prevChar] then
+    if posChar==them[prevChar] then
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
-    --[[
-    elseif quotes[prevChar] then
-      if quotes[prevChar][1] then
-        vim.api.nvim_input("<Del>")
-      end
-      quotes[prevChar][1]=not quotes[prevChar][1]
-    --]]
     end
   end
 end
