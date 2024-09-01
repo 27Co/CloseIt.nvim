@@ -38,10 +38,11 @@ local quotes={
 }
 
 local function close_it()
-  local change=currCol-prevCol
+  local changeCol=currCol-prevCol
+  local changeRow=currRow-prevRow
   -- 1 if single character inserted
   -- -1 if single character deleted
-  if change==1 then
+  if changeRow==0 and changeCol==1 then
     if lefts[currChar] and (posChar==" " or posChar=="" or posChar==lefts[currChar]) then
       -- [left] inserted, followed by [space|empty|right] (close it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {lefts[currChar]})
@@ -55,9 +56,13 @@ local function close_it()
       -- 0 if followed by [quote] (skip it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1-numBool, {currChar:rep(numBool)})
     end
-  elseif change==-1 and (posChar==lefts[prevChar] or posChar==quotes[prevChar]) then
+  elseif changeRow==0 and changeCol==-1 and (posChar==lefts[prevChar] or posChar==quotes[prevChar]) then
     -- [left/quote] deleted, followed by [right/quote] (delete it)
     vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
+  elseif changeRow==1 and changeCol<0 and posChar==lefts[prevChar] then
+    -- enter is hit inside brackets
+    vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {"", ""})
+    vim.api.nvim_input("<Tab>")
   end
 end
 
