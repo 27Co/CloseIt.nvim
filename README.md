@@ -9,6 +9,7 @@ A neovim plugin to automatically close brackets and quotes.
 - Cursor remains inside
 - Typing the right bracket/quote moves cursor outside
 - Deleting the left bracket/quote also deletes the right one
+- Hitting enter indents the new line (with right bracket/quote in another line)
 
 ## Known bug:
 

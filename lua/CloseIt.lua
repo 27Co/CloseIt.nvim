@@ -1,4 +1,4 @@
-local auto_closer = {}
+local CloseIt={}
 
 local currRow, currCol=unpack(vim.api.nvim_win_get_cursor(0))
 local prevRow, prevCol
@@ -38,27 +38,35 @@ local quotes={
 }
 
 local function close_it()
-  local change=currCol-prevCol
-  if change==1 then
-    if lefts[currChar] and (posChar==" " or posChar=="" or posChar==lefts[currChar]) then
-      -- opening bracket inserted and not followed by text, should close it
+  local changeCol=currCol-prevCol
+  local changeRow=currRow-prevRow
+  -- 1 if single character inserted
+  -- -1 if single character deleted
+  if changeRow==0 and changeCol==1 then
+    if lefts[currChar] and (posChar==" " or posChar=="" or rights[posChar] or quotes[posChar]) then
+      -- [left] inserted, followed by [space|empty|rights|quotes] (close it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {lefts[currChar]})
-    elseif quotes[currChar] and (posChar==" " or posChar=="" or posChar==currChar) then
-      -- quote inserted and not followed by text, should close it or skip it
-      -- numBool: 1 if posChar is different from currChar (should close quote), 0 otherwise
-      numBool=(posChar~=currChar) and 1 or 0
-      vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1-numBool, {currChar:rep(numBool)})
     elseif rights[currChar] and posChar==currChar then
-      -- closing bracket inserted and next char is the same, should skip it
+      -- [right] inserted, followed by [right] (skip it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
+    elseif quotes[currChar] and (posChar==" " or posChar=="" or rights[posChar] or quotes[posChar]) then
+      -- [quote] inserted, followed by [space|empty|rights|quotes]
+      numBool=(posChar~=quotes[currChar]) and 1 or 0
+      -- 1 if followed by [space|empty|rights|otherquote] (close it)
+      -- 0 if followed by [quote] (skip it)
+      vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1-numBool, {currChar:rep(numBool)})
     end
-  elseif change==-1 and (posChar==lefts[prevChar] or posChar==quotes[prevChar]) then
-    -- opening bracket deleted and closing bracket is right after cursor, should delete it
+  elseif changeRow==0 and changeCol==-1 and (posChar==lefts[prevChar] or posChar==quotes[prevChar]) then
+    -- [left/quote] deleted, followed by [right/quote] (delete it)
     vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
+  elseif changeRow==1 and changeCol<0 and posChar==lefts[prevChar] then
+    -- enter is hit inside brackets
+    vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {"", ""})
+    vim.api.nvim_input("<Tab>")
   end
 end
 
-function auto_closer.setup()
+function CloseIt.setup()
   vim.api.nvim_create_autocmd({"TextChangedI", "InsertEnter"}, {
     pattern = "*",
     callback = update_pos
@@ -69,5 +77,5 @@ function auto_closer.setup()
   })
 end
 
-return auto_closer
+return CloseIt
 
