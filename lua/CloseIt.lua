@@ -43,16 +43,16 @@ local function close_it()
   -- 1 if single character inserted
   -- -1 if single character deleted
   if changeRow==0 and changeCol==1 then
-    if lefts[currChar] and (posChar==" " or posChar=="" or posChar==lefts[currChar]) then
-      -- [left] inserted, followed by [space|empty|right] (close it)
+    if lefts[currChar] and (posChar==" " or posChar=="" or rights[posChar] or quotes[posChar]) then
+      -- [left] inserted, followed by [space|empty|rights|quotes] (close it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {lefts[currChar]})
     elseif rights[currChar] and posChar==currChar then
       -- [right] inserted, followed by [right] (skip it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
-    elseif quotes[currChar] and (posChar==" " or posChar=="" or posChar==quotes[currChar]) then
-      -- [quote] inserted, followed by [space|empty|quote]
-      numBool=(posChar~=currChar) and 1 or 0
-      -- 1 if followed by [space|empty] (close it)
+    elseif quotes[currChar] and (posChar==" " or posChar=="" or rights[posChar] or quotes[posChar]) then
+      -- [quote] inserted, followed by [space|empty|rights|quotes]
+      numBool=(posChar~=quotes[currChar]) and 1 or 0
+      -- 1 if followed by [space|empty|rights|otherquote] (close it)
       -- 0 if followed by [quote] (skip it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1-numBool, {currChar:rep(numBool)})
     end
