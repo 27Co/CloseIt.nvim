@@ -61,7 +61,9 @@ local function close_it()
     vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
   elseif changeRow==1 and changeCol<0 and posChar==lefts[prevChar] then
     -- enter is hit inside brackets
-    vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {"", ""})
+    prevLine=vim.api.nvim_buf_get_lines(0, prevRow-1, prevRow, false)[1]
+    indentation=prevLine:match("^%s*")
+    vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {"", indentation})
     vim.api.nvim_input("<Tab>")
   end
 end
