@@ -1,5 +1,6 @@
 local CloseIt={}
 
+local vim = vim
 local currRow, currCol=unpack(vim.api.nvim_win_get_cursor(0))
 local prevRow, prevCol
 local currChar=""   -- character right before cursor (current)
@@ -51,7 +52,7 @@ local function close_it()
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
     elseif quotes[currChar] and (posChar==" " or posChar=="" or rights[posChar] or quotes[posChar]) then
       -- [quote] inserted, followed by [space|empty|rights|quotes]
-      numBool=(posChar~=quotes[currChar]) and 1 or 0
+      local numBool=(posChar~=quotes[currChar]) and 1 or 0
       -- 1 if followed by [space|empty|rights|otherquote] (close it)
       -- 0 if followed by [quote] (skip it)
       vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1-numBool, {currChar:rep(numBool)})
@@ -61,8 +62,8 @@ local function close_it()
     vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol+1, {})
   elseif changeRow==1 and changeCol<0 and posChar==lefts[prevChar] then
     -- enter is hit inside brackets
-    prevLine=vim.api.nvim_buf_get_lines(0, prevRow-1, prevRow, false)[1]
-    indentation=prevLine:match("^%s*")
+    local prevLine=vim.api.nvim_buf_get_lines(0, prevRow-1, prevRow, false)[1]
+    local indentation=prevLine:match("^%s*")
     vim.api.nvim_buf_set_text(0, currRow-1, currCol, currRow-1, currCol, {"", indentation})
     vim.api.nvim_input("<Tab>")
   end
