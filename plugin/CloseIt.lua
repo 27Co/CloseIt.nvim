@@ -1,5 +1,3 @@
-local CloseIt={}
-
 local vim = vim
 local currRow, currCol=unpack(vim.api.nvim_win_get_cursor(0))
 local prevRow, prevCol
@@ -69,16 +67,12 @@ local function close_it()
   end
 end
 
-function CloseIt.setup()
-  vim.api.nvim_create_autocmd({"TextChangedI", "InsertEnter"}, {
-    pattern = "*",
-    callback = update_pos
-  })
-  vim.api.nvim_create_autocmd("TextChangedI", {
-    pattern = "*",
-    callback = close_it
-  })
-end
-
-return CloseIt
+vim.api.nvim_create_autocmd({"TextChangedI", "InsertEnter"}, {
+  pattern = "*",
+  callback = update_pos
+})
+vim.api.nvim_create_autocmd("TextChangedI", {
+  pattern = "*",
+  callback = close_it
+})
 
