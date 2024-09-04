@@ -67,12 +67,16 @@ local function close_it()
   end
 end
 
+local augroup=vim.api.nvim_create_augroup("CloseIt", {clear=true})
+
 vim.api.nvim_create_autocmd({"TextChangedI", "InsertEnter"}, {
-  pattern = "*",
-  callback = update_pos
+  group=augroup,
+  pattern="*",
+  callback=update_pos
 })
-vim.api.nvim_create_autocmd("TextChangedI", {
-  pattern = "*",
-  callback = close_it
+vim.api.nvim_create_autocmd({"TextChangedI"}, {
+  group=augroup,
+  pattern="*",
+  callback=close_it
 })
 
