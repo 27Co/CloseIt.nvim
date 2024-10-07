@@ -15,6 +15,26 @@ A neovim plugin to automatically close brackets and quotes.
 
 ### Using vim-plug
 
+Install Lazy.nvim following the installation guide [here](https://lazy.folke.io/installation).
+
+Then add this line where you add your plugins:
+
+```lua
+require("lazy").setup({
+  spec = {
+    -- here
+    { "27Co/CloseIt.nvim" },
+  },
+  -- Configure any other settings here. See the documentation for more details.
+  -- colorscheme that will be used when installing plugins.
+  install = { colorscheme = { "habamax" } },
+  -- automatically check for plugin updates
+  checker = { enabled = true },
+})
+```
+
+### Using vim-plug
+
 In init.vim file:
 
 ```vim
