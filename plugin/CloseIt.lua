@@ -90,3 +90,15 @@ vim.api.nvim_create_autocmd({ "TextChangedI" }, {
 	pattern = "*",
 	callback = close_it,
 })
+
+-- Control + ` inserts a code block
+
+local function code_fence()
+	if currCol ~= 0 then
+		return
+	end
+	vim.api.nvim_buf_set_text(0, currRow - 1, 0, currRow - 1, 0, { "```", "```" })
+	vim.api.nvim_win_set_cursor(0, { currRow, 3 })
+end
+
+vim.keymap.set("i", "<C-`>", code_fence, { noremap = true })
