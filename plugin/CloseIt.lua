@@ -48,11 +48,7 @@ local function close_it()
 		elseif rights[currChar] and posChar == currChar then
 			-- [right] inserted, followed by [right] (skip it)
 			vim.api.nvim_buf_set_text(0, curr[1] - 1, curr[2], curr[1] - 1, curr[2] + 1, {})
-		elseif
-			quotes[currChar]
-			and (prevChar == " " or prevChar == "" or lefts[prevChar] or quotes[prevChar])
-			and (posChar == " " or posChar == "" or rights[posChar] or quotes[posChar])
-		then
+		elseif quotes[currChar] and (posChar == " " or posChar == "" or rights[posChar] or quotes[posChar]) then
 			-- [quote] inserted, followed by [space|empty|rights|quotes]
 			local numBool = (posChar ~= quotes[currChar]) and 1 or 0
 			-- 1 if followed by [space|empty|rights|otherquote] (close it)
